@@ -5,7 +5,7 @@ int calculate(char *exp){
     int current = 0, res = 0, temp = 0;
     char op = '+'; 
 
-	int i;
+    int i;
     for(i = 0; exp[i] != '\0'; i++){
         char c = exp[i];
 
@@ -25,17 +25,17 @@ int calculate(char *exp){
 			else if (op == '*'){
                 temp *= current;  
             } 
-			else if (op == '/'){
+	else if (op == '/'){
             	if(current==0){
             		printf("Error: Division by Zero\n");
-            		return 0;
+            		return;
 				}
                 temp /= current;  
             }
-            else{
-            	printf("Error: Invalid Expression\n");
-            	return 0;
-			}
+        else{
+            printf("Error: Invalid Expression\n");
+            return;
+	}
 
             op = c;  
             current = 0;  
@@ -43,18 +43,16 @@ int calculate(char *exp){
     }
 
     res += temp;  
-    return res;
+    printf("%d\n", res);
 }
 
-int main(){
+void main(){
     char exp[100];
     
     printf("Enter a mathematical expression: ");
     fgets(exp, sizeof(exp), stdin);
 
-    int result = calculate(exp);
-    printf("%d\n", result);
-    
-	return 0;
+    calculate(exp);
+    return 0;
 }
 
