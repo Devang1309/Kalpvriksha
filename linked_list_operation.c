@@ -22,7 +22,7 @@ void insertAtEnd(int value){
     newNode->next = NULL;
 
     if(head == NULL){
-        newNode->next = NULL;
+        head = newNode;
     }
     else{
         Node* temp = head;
@@ -249,7 +249,7 @@ int main(){
             
             default:
                 printf("Enter a valid choice!");
-                return 0;
+                break;
         }
 
         index++;
