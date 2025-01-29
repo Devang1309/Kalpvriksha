@@ -130,6 +130,20 @@ void sort_linked_list()
     head = critical_head->next;
 }
 
+void severity_input(char severity[100], int patient_id){
+    printf("Enter the correct severity\n");
+    scanf("%s", severity);
+
+    if (strcmp(severity,"critical")==0 ||strcmp(severity,"serious")==0 || strcmp(severity,"stable")==0)
+    {
+        create_node(patient_id, severity);
+        return;
+    }
+    else{
+        severity_input(severity, patient_id);
+    }
+}
+
 int main()
 {
     int number_patient;
@@ -158,8 +172,7 @@ int main()
             create_node(patient_id, severity);
         }
         else{
-            printf("Enter the correct severity\n");
-            continue;
+            severity_input(severity, patient_id);
         }
         if (index == -1)
         {
