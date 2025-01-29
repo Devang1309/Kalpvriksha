@@ -1,134 +1,180 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-typedef struct Node{
+typedef struct Node
+{
     int id;
     char severity_level[100];
-    struct Node* next;
+    struct Node *next;
 } Node;
 
-Node* head = NULL;
+typedef struct
+{
+    int id;
+} Map;
 
-void create_node(int patient_id, char severity[100]){
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    newNode->id = patient_id;
-    int index = 0;
-    while(severity[index]!='\0'){
-        newNode->severity_level[index] = severity[index];
-        index++;
+int search_map(Map map[], int map_index, int id)
+{
+    for (int i = 0; i < map_index; i++)
+    {
+        if (map[i].id == id)
+            return i;
     }
+
+    return -1;
+}
+Node *head = NULL;
+
+void create_node(int patient_id, char severity[100])
+{
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->id = patient_id;
+    strcpy(newNode->severity_level, severity);
     newNode->next = NULL;
 
-    if(head==NULL){
+    if (head == NULL)
+    {
         head = newNode;
     }
-    else{
-        Node* temp = head;
-        while(temp->next != NULL){
+    else
+    {
+        Node *temp = head;
+        while (temp->next != NULL)
+        {
             temp = temp->next;
         }
-
-        temp->next = newNode; 
+        temp->next = newNode;
     }
 }
 
-void display(){
-    if(head==NULL){
+void display()
+{
+    if (head == NULL)
+    {
         printf("\n");
         return;
     }
 
-    Node* temp = head;
-    while(temp != NULL){
+    Node *temp = head;
+    while (temp != NULL)
+    {
         printf("%d ", temp->id);
-        int index = 0;
-        while(temp->severity_level[index]!='\0'){
-            printf("%c", temp->severity_level[index]);
-            index++;
-        }
-        printf("\n");
+        printf("%s\n", temp->severity_level);
         temp = temp->next;
     }
     printf("\n");
 }
 
-void sort_linked_list(){
-    Node* critical_head = (Node*)malloc(sizeof(Node));
+void sort_linked_list()
+{
+    Node *critical_head = (Node *)malloc(sizeof(Node));
     critical_head->next = NULL;
-    Node* serious_head = (Node*)malloc(sizeof(Node));
+    Node *serious_head = (Node *)malloc(sizeof(Node));
     serious_head->next = NULL;
-    Node* stable_head = (Node*)malloc(sizeof(Node));
+    Node *stable_head = (Node *)malloc(sizeof(Node));
     stable_head->next = NULL;
 
-    Node* temp = head;
-    Node* prev = (Node*)malloc(sizeof(Node));
-    while(temp!=NULL){
-        Node* front = temp->next;
-        if(temp->severity_level=="critical"){
-            Node* critical_temp = critical_head;
-            while(critical_temp->next!=NULL){
+    Node *temp = head;
+    Node *prev = NULL;
+
+    while (temp != NULL)
+    {
+        Node *front = temp->next;
+        if (strcmp(temp->severity_level, "critical") == 0)
+        {
+            Node *critical_temp = critical_head;
+            while (critical_temp->next != NULL)
+            {
                 critical_temp = critical_temp->next;
             }
-
             critical_temp->next = temp;
-            prev->next = front;
-            prev = temp;
-            temp->next = NULL; 
         }
-        if(temp->severity_level=="serious"){
-            Node* serious_temp = serious_head;
-            while(serious_temp->next!=NULL){
-                serious_temp = serious_temp->next
+        else if (strcmp(temp->severity_level, "serious") == 0)
+        {
+            Node *serious_temp = serious_head;
+            while (serious_temp->next != NULL)
+            {
+                serious_temp = serious_temp->next;
             }
-
             serious_temp->next = temp;
-            prev->next = front;
-            prev = temp;
-            temp->next = NULL;
         }
-        if(temp->severity_level=="stable"){
-            Node* stable_temp = stable_head;
-            while(stable_temp->next!=NULL){
+        else if (strcmp(temp->severity_level, "stable") == 0)
+        {
+            Node *stable_temp = stable_head;
+            while (stable_temp->next != NULL)
+            {
                 stable_temp = stable_temp->next;
             }
-
             stable_temp->next = temp;
-            prev->next = front;
-            prev = temp;
-            temp->next = NULL;
         }
 
+        temp->next = NULL;
         temp = front;
     }
 
+    Node *move = critical_head;
+    while (move->next != NULL)
+    {
+        move = move->next;
+    }
+    move->next = serious_head->next;
+
+    move = critical_head;
+    while (move->next != NULL)
+    {
+        move = move->next;
+    }
+    move->next = stable_head->next;
+
+    head = critical_head->next;
 }
 
-int main(){
+int main()
+{
     int number_patient;
     scanf("%d", &number_patient);
-
+    Map map[100];
+    int map_index = 0;
     int operation = number_patient;
-
     int patient_id;
     char severity[100];
 
-    while(operation){
+    while (operation!=0)
+    {
         scanf("%d", &patient_id);
+        int index = search_map(map, map_index, patient_id);
         getchar();
+        scanf("%s", severity);
 
-        scanf("%s", &severity);
-        char ch = getchar();
-
-        create_node(patient_id, severity);
-
-        if(ch=='\n'){
-            operation--;
+        if (index != -1)
+        {
+            printf("Id is already used.\n");
+            continue;
         }
+
+        if (strcmp(severity,"critical")==0 ||strcmp(severity,"serious")==0 || strcmp(severity,"stable")==0)
+        {
+            create_node(patient_id, severity);
+        }
+        else{
+            printf("Enter the correct severity\n");
+            continue;
+        }
+        if (index == -1)
+        {
+            map[map_index].id = patient_id;
+            map_index++;
+        }
+        
+
+        operation--;
     }
 
-    display();
-
     sort_linked_list();
+
+    printf("Sorted linked list is: \n");
+    display();
 
     return 0;
 }
